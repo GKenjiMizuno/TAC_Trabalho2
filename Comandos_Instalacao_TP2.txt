@@ -1,0 +1,53 @@
+# Comandos para configurar o ambiente TP2 em uma VM Ubuntu
+
+# 1. Instalar Docker e Docker Compose
+sudo apt update && sudo apt install -y docker.io docker-compose
+
+# 2. Habilitar e iniciar o serviço Docker
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# 3. Baixar e rodar o container do SQLi-Labs
+sudo docker pull acgpiano/sqli-labs
+sudo docker run -d -p 8080:80 --name sqli-labs acgpiano/sqli-labs:latest
+
+# 4. Instalar o SQLMap
+sudo apt install -y sqlmap
+
+# 5. Instalar o Snort
+sudo apt install -y snort
+
+# 6. Verificar interface de rede (usar 'lo' para localhost)
+ip a
+
+# 7. Criar arquivo de regras SQLi personalizadas
+sudo nano /etc/snort/rules/sql_injection.rules
+
+# (cole as regras abaixo)
+# alert tcp any any -> any 80 (msg:"[SQLi] SELECT detectado na URI"; content:"select"; http_uri; nocase; sid:1000101; rev:1;)
+# alert tcp any any -> any 80 (msg:"[SQLi] UNION detectado na URI"; content:"union"; http_uri; nocase; sid:1000102; rev:1;)
+# alert tcp any any -> any 80 (msg:"[SQLi] OR 1=1 detectado na URI"; content:"or 1=1"; http_uri; nocase; sid:1000103; rev:1;)
+# alert tcp any any -> any 80 (msg:"[SQLi] SLEEP detectado na URI"; content:"sleep"; http_uri; nocase; sid:1000104; rev:1;)
+
+# 8. Incluir o arquivo no snort.conf
+sudo nano /etc/snort/snort.conf
+# Adicione no final: include $RULE_PATH/sql_injection.rules
+
+# 9. Rodar o Snort (em modo console, interface 'lo')
+sudo snort -A console -q -i lo -c /etc/snort/snort.conf
+
+# 10. Gerar requisições para teste (outro terminal)
+curl "http://localhost:8080/Less-1/?id=1%20UNION%20SELECT"
+curl "http://localhost:8080/Less-1/?id=1%20OR%201=1"
+curl "http://localhost:8080/Less-1/?id=1%20AND%20SLEEP(5)"
+
+# 11. Rodar o SQLMap
+sqlmap -u "http://localhost:8080/Less-1/?id=1" --dbs
+
+# 12. Instalar e configurar firewall UFW (opcional)
+sudo apt install -y ufw
+sudo ufw allow 22       # SSH
+sudo ufw allow 8080     # Acesso ao SQLi-Labs
+sudo ufw enable         # Ativar o firewall
+sudo ufw status verbose
+
