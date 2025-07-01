@@ -1,0 +1,11 @@
+Comandos:
+
+sudo apt install docker.io docker-compose
+
+sudo systemctl enable docker
+
+sudo systemctl start docker
+
+sudo docker pull acgpiano/sqli-labs
+
+sudo docker run -d -p 8080:80 --name sqli-labs acgpiano/sqli-labs:lates

@@ -1,0 +1,45 @@
+# Comandos Docker para o TP2 – SQL Injection
+
+# 1. Instalar Docker (Ubuntu/Debian)
+sudo apt update
+sudo apt install docker.io docker-compose
+
+# 2. Habilitar e iniciar o serviço Docker
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# 3. Baixar a imagem do SQLi-Labs
+docker pull acgpiano/sqli-labs
+
+# 4. Rodar o SQLi-Labs (porta 8080 mapeada para porta 80 do container)
+docker run -d -p 8080:80 --name sqli-labs acgpiano/sqli-labs:latest
+
+# 5. Acessar a aplicação no navegador
+# http://localhost:8080
+
+# 6. Parar o container
+docker stop sqli-labs
+
+# 7. Iniciar novamente o container (se já estiver criado)
+docker start sqli-labs
+
+# 8. Verificar containers em execução
+docker ps
+
+# 9. Verificar todos os containers (incluindo parados)
+docker ps -a
+
+# 10. Verificar logs do container
+docker logs sqli-labs
+
+# 11. Acessar o terminal do container
+docker exec -it sqli-labs /bin/bash
+
+# 12. Remover container
+docker rm -f sqli-labs
+
+# 13. Remover imagem
+docker rmi acgpiano/sqli-labs
+
+# 14. Limpar recursos não utilizados
+docker system prune -a

